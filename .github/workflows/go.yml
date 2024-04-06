@@ -1,0 +1,33 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+
+# Set default permissions as read only.
+permissions: read-all
+
+name: Go
+jobs:
+  code-check:
+    strategy:
+      matrix:
+        go-version: [1.21.x, 1.22.x]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Download Go dependencies
+      env:
+        GOPROXY: "https://proxy.golang.org"
+      run: go mod download
+    - name: staticcheck.io
+      uses: dominikh/staticcheck-action@v1.3.0
+      with:
+        version: "2023.1.7"
+        install-go: false
+        cache-key: ${{ matrix.go }}
