@@ -12,7 +12,7 @@ jobs:
   code-check:
     strategy:
       matrix:
-        go-version: [1.21.x, 1.22.x]
+        go-version: [1.22.x, 1.23.x]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -28,6 +28,6 @@ jobs:
     - name: staticcheck.io
       uses: dominikh/staticcheck-action@v1.3.0
       with:
-        version: "2023.1.7"
+        version: "2024.1.1"
         install-go: false
         cache-key: ${{ matrix.go }}
