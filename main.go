@@ -108,13 +108,13 @@ func main() {
 	}(uint32(devID.Index), rtnl)
 
 	qdisc := tc.Object{
-		tc.Msg{
+		Msg: tc.Msg{
 			Family:  unix.AF_UNSPEC,
 			Ifindex: uint32(devID.Index),
 			Handle:  helper.BuildHandle(tc.HandleRoot, 0x0000),
 			Parent:  tc.HandleIngress,
 		},
-		tc.Attribute{
+		Attribute: tc.Attribute{
 			Kind: "clsact",
 		},
 	}
@@ -126,13 +126,14 @@ func main() {
 	}
 	// when deleting the qdisc, the applied filter will also be gone
 	defer tcnl.Qdisc().Delete(&qdisc)
+	priority := uint16(1)
 
 	filter := tc.Object{
 		Msg: tc.Msg{
 			Family:  unix.AF_UNSPEC,
 			Ifindex: uint32(devID.Index),
 			Parent:  helper.BuildHandle(tc.HandleRoot, tc.HandleMinIngress),
-			Info:    helper.FilterInfo(0, unix.ETH_P_ALL),
+			Info:    helper.FilterInfo(priority, unix.ETH_P_ALL),
 		},
 		Attribute: tc.Attribute{
 			Kind: "bpf",
@@ -154,9 +155,8 @@ func main() {
 		Msg: tc.Msg{
 			Family:  unix.AF_UNSPEC,
 			Ifindex: uint32(devID.Index),
-			Handle:  0x1,
 			Parent:  helper.BuildHandle(tc.HandleRoot, tc.HandleMinIngress),
-			Info:    helper.FilterInfo(0, unix.ETH_P_ALL),
+			Info:    helper.FilterInfo(priority, unix.ETH_P_ALL),
 		},
 		Attribute: tc.Attribute{
 			Kind: "bpf",
